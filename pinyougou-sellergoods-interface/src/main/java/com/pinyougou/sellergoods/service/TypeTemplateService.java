@@ -1,8 +1,9 @@
 package com.pinyougou.sellergoods.service;
-import java.util.List;
 import com.pinyougou.pojo.TbTypeTemplate;
-
 import entity.PageResult;
+
+import java.util.List;
+import java.util.Map;
 /**
  * 服务层接口
  * @author Administrator
@@ -57,5 +58,10 @@ public interface TypeTemplateService {
 	 * @return
 	 */
 	public PageResult findPage(TbTypeTemplate typeTemplate, int pageNum, int pageSize);
-	
+
+	/**
+	 * 获取模板返回下拉列表
+	 * @return
+	 */
+	List<Map> getOptionList();
 }

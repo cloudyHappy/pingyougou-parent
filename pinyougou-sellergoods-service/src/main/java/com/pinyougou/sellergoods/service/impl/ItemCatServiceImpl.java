@@ -1,6 +1,4 @@
 package com.pinyougou.sellergoods.service.impl;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -9,8 +7,10 @@ import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.pojo.TbItemCatExample;
 import com.pinyougou.pojo.TbItemCatExample.Criteria;
 import com.pinyougou.sellergoods.service.ItemCatService;
-
 import entity.PageResult;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * 服务实现层
@@ -74,7 +74,17 @@ public class ItemCatServiceImpl implements ItemCatService {
 	@Override
 	public void delete(Long[] ids) {
 		for(Long id:ids){
-			itemCatMapper.deleteByPrimaryKey(id);
+			TbItemCatExample example = new TbItemCatExample();
+            Criteria criteria = example.createCriteria();
+            criteria.andParentIdEqualTo(id);
+            List<TbItemCat> list = itemCatMapper.selectByExample(example);
+            if(list!=null&&list.size()>0){
+                throw new RuntimeException("对不起,该分类下还有子分类,请先删除所有子分类!");
+            }
+
+
+
+            itemCatMapper.deleteByPrimaryKey(id);
 		}		
 	}
 	
@@ -96,5 +106,14 @@ public class ItemCatServiceImpl implements ItemCatService {
 		Page<TbItemCat> page= (Page<TbItemCat>)itemCatMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+	@Override
+	public List<TbItemCat> findByParentId(Long parentId) {
+		TbItemCatExample example = new TbItemCatExample();
+        Criteria criteria = example.createCriteria();
+        criteria.andParentIdEqualTo(parentId);
+        List<TbItemCat> list = itemCatMapper.selectByExample(example);
+        return list;
+	}
+
 }
